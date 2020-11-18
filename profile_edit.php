@@ -1,5 +1,4 @@
 <?PHP
-
 // Connection to database variables //
 $server = "localhost";
 $username = "andrew";
@@ -26,71 +25,74 @@ if (isset($_POST['submit'])) {
      */
     if (!empty($_POST['first_name'])) {
         $first_name = htmlspecialchars(mysqli_real_escape_string($connection, $_POST['first_name']));
+        setcookie("first_name", $_POST["first_name"], time() + 3600 * 24);
     }
 
     if (!empty($_POST['last_name'])) {
         $last_name = htmlspecialchars(mysqli_real_escape_string($connection, $_POST['last_name']));
+        setcookie("last_name", $_POST["last_name"], time() + 3600 * 24);
     }
 
     if (!empty($_POST['username'])) {
         $username = htmlspecialchars(mysqli_real_escape_string($connection, $_POST['username']));
+        setcookie("username", $_POST["username"], time() + 3600 * 24);
     }
 
     if (!empty($_POST['password'])) {
         $password = htmlspecialchars(mysqli_real_escape_string($connection, $_POST['password']));
+        setcookie("password", $_POST["password"], time() + 3600 * 24);
     }
 
     if (!empty($_POST['email'])) {
         $email = htmlspecialchars(mysqli_real_escape_string($connection, $_POST['email']));
+        setcookie("email", $_POST["email"], time() + 3600 * 24);
     }
 
     if (!empty($_POST['address'])) {
         $address = htmlspecialchars(mysqli_real_escape_string($connection, $_POST['address']));
+        setcookie("address", $_POST["address"], time() + 3600 * 24);
     }
 
     if (!empty($_POST['address_two'])) {
         $address_two = htmlspecialchars(mysqli_real_escape_string($connection, $_POST['address_two']));
+        setcookie("address_two", $_POST["address_two"], time() + 3600 * 24);
     }
 
     if (!empty($_POST['state'])) {
         $state = htmlspecialchars(mysqli_real_escape_string($connection, $_POST['state']));
+        setcookie("state", $_POST["state"], time() + 3600 * 24);
     }
 
     if (!empty($_POST['city'])) {
         $city = htmlspecialchars(mysqli_real_escape_string($connection, $_POST['city']));
+        setcookie("city", $_POST["city"], time() + 3600 * 24);
     }
 
     if (!empty($_POST['zip'])) {
         $zip = htmlspecialchars(mysqli_real_escape_string($connection, $_POST['zip']));
+        setcookie("zip", $_POST["zip"], time() + 3600 * 24);
     }
     // End of checking for variables in POST and assigning variables values //
 
     // SQL query to enter to the database //
-    $query = "INSERT INTO ACCOUNTS (first_name, last_name, username, password, email, address, city, state, zip) VALUES ('$first_name', '$last_name', '$username', '$password', '$email', '$address', '$city', '$state', '$zip')";
+    $query = "UPDATE ACCOUNTS 
+                SET first_name ='$first_name', last_name='$last_name', username='$username', password='$password', email='$email',
+                address='$address', address_two = '$address_two', city='$city', state='$state', zip= '$zip'
+                WHERE user_id='$user_id'";
 
-    // Using cookies to track user information for 24 hours //
-    setcookie("first_name", $first_name, time() + 3600 * 24);
-    setcookie("last_name", $last_name, time() + 3600 * 24);
-    setcookie("username", $username, time() + 3600 * 24);
-    setcookie("email", $email, time() + 3600 * 24);
-    setcookie("address", $address, time() + 3600 * 24);
-    setcookie("address_two", $address_two, time() + 3600 * 24);
-    setcookie("city", $city, time() + 3600 * 24);
-    setcookie("state", $state, time() + 3600 * 24);
-    setcookie("zip", $zip, time() + 3600 * 24);
-    // End of using cookies to track user information for 24 hours //
+        // If successful query to the database, go to profile page; otherwise, throw an error //
+        if (mysqli_query($connection, $query)) {
+            header('location: profile.php');
+        } else {
+            echo "Connection error: " . mysqli_connect_error();
+        }
 
-    // If successful query to the database, go to library page; otherwise, throw an error //
-    if (mysqli_query($connection, $query)) {
-        header('location: index.php');
-    } else {
-        echo "Connection error: " . mysqli_connect_error();
-    }
-    // End of checking for SQL error //
+
+
+
+
 }
-// End of checking for POST data from the browser //
-
-?>
+    ?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -101,34 +103,66 @@ if (isset($_POST['submit'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
 
-    <link rel="stylesheet" href="./profile.css">
     <link rel="stylesheet" href="./core.css">
-    <title>Sign Up</title>
+    <link rel="stylesheet" href="./profile.css">
+    <title>Profile</title>
 </head>
-<!--End of Head-->
+<!--End of head-->
 
 <!--Body-->
-<body class="bg-light">
+<body>
 
-<!--Create an account form-->
-<form method="POST">
-    <div class="album py-5 bg-light container emp-profile">
-        <div class="py-5 text-center">
-
-            <!--Header-->
-            <h2>Create Account</h2>
-            <p class="lead">Creating an account allows for us to better personalize an experience for you, the user.</p>
+<!--Header-->
+<header>
+    <div class="navbar navbar-dark bg-dark box-shadow">
+        <div class="container d-flex justify-content-between">
+            <a href="./library.php" class="navbar-brand d-flex align-items-center">
+                <strong>Library</strong>
+            </a>
         </div>
+    </div>
+</header>
+<!--End of header-->
 
-        <div class="col-md-12 order-md-1">
-            <h4 class="mb-3">Contact Info</h4>
-            <form class="needs-validation" novalidate>
+<!-- Using PHP cookies to enter data into appropriate fields-->
+<div class="container emp-profile profile-tab">
+    <form method="POST">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="profile-img">
+                    <img src="./images/user.png" alt="Admin" width="860">
+                    <div class="file btn btn-lg btn-primary">
+                        Change Photo
+                        <input type="file" name="file"/>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="profile-head">
+                    <h1>
+                        <?php echo $_COOKIE["first_name"] . " " . $_COOKIE["last_name"]; ?>
+                    </h1>
+                    <ul class="nav nav-tabs" id="myTab" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link active" id="home-tab" data-toggle="tab" role="tab"
+                               aria-controls="home" aria-selected="true">About</a>
+                        </li>
+                    </ul>
+                </div>
+                <form class="needs-validation" novalidate>
 
                 <!--First Name-->
                 <div class="row">
                     <div class="col-md-6 mb-3">
-                        <label for="firstName">First name</label>
-                        <input type="text" class="form-control" name="first_name" required>
+                    <div class="row">
+                        <div class="col-md-8">
+                            <label for="first_name">Current First Name</label>
+                        </div>
+                        <div class="col-md-4">
+                            <p><?php echo $_COOKIE["first_name"]; ?></p>
+                        </div>
+                    </div>
+                        <input type="text" class="form-control" name="first_name" placeholder="Update First Name">
                         <div class="invalid-feedback">
                             Valid first name is required.
                         </div>
@@ -137,8 +171,15 @@ if (isset($_POST['submit'])) {
 
                     <!--Last Name-->
                     <div class="col-md-6 mb-3">
-                        <label for="lastName">Last name</label>
-                        <input type="text" class="form-control" name="last_name" required>
+                    <div class="row">
+                        <div class="col-md-8">
+                            <label for="last_name">Current Last Name</label>
+                        </div>
+                        <div class="col-md-4">
+                            <p><?php echo $_COOKIE["last_name"]; ?></p>
+                        </div>
+                    </div>
+                        <input type="text" class="form-control" name="last_name" placeholder="Update Last Name">
                         <div class="invalid-feedback">
                             Valid last name is required.
                         </div>
@@ -148,12 +189,19 @@ if (isset($_POST['submit'])) {
 
                 <!--Username-->
                 <div class="mb-3">
-                    <label for="username">Username</label>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <label for="username">Current Username</label>
+                        </div>
+                        <div class="col-md-4">
+                            <p><?php echo $_COOKIE["username"]; ?></p>
+                        </div>
+                    </div>
                     <div class="input-group">
                         <div class="input-group-prepend">
                             <span class="input-group-text">@</span>
                         </div>
-                        <input type="text" class="form-control" name="username" placeholder="username" required>
+                        <input type="text" class="form-control" name="username" placeholder="Update Username" >
                         <div class="invalid-feedback" style="width: 100%;">
                             Your username is required.
                         </div>
@@ -163,10 +211,20 @@ if (isset($_POST['submit'])) {
 
                 <!--Password-->
                 <div class="mb-3">
-                    <label for="password">Password</label>
-                    <div class="input-group">
-
-                        <input type="password" class="form-control" name="password" placeholder="password" required>
+                <div class="row">
+                        <div class="col-md-4">
+                            <label for="password">Current Password</label>
+                        </div>
+                        <div class="col-md-4">
+                            <p><?php 
+                            $censoredPassword = substr($_COOKIE["password"],0,1);
+                            for ($x = 1; $x < strlen($_COOKIE["password"]); $x++) {
+                                $censoredPassword.="*";
+                              }
+                            echo $censoredPassword; 
+                            ?></p>
+                        </div>
+                        <input type="password" class="form-control" name="password" placeholder="Update Password" >
                         <div class="invalid-feedback" style="width: 100%;">
                             Your password is required.
                         </div>
@@ -176,8 +234,15 @@ if (isset($_POST['submit'])) {
 
                 <!--Email-->
                 <div class="mb-3">
-                    <label for="email">Email <span class="text-muted"></span></label>
-                    <input type="text" class="form-control" name="email" placeholder="you@example.com" required>
+                <div class="row">
+                        <div class="col-md-4">
+                            <label for="username">Current Email</label>
+                        </div>
+                        <div class="col-md-4">
+                            <p><?php echo $_COOKIE["email"]; ?></p>
+                        </div>
+                    </div>
+                    <input type="text" class="form-control" name="email" placeholder="Update Email" >
                     <div class="invalid-feedback">
                         Please enter a valid email address.
                     </div>
@@ -186,8 +251,15 @@ if (isset($_POST['submit'])) {
 
                 <!--Address-->
                 <div class="mb-3">
-                    <label for="address">Address</label>
-                    <input type="text" class="form-control" name="address" placeholder="1234 Main St" required>
+                <div class="row">
+                        <div class="col-md-4">
+                            <label for="username">Current Address</label>
+                        </div>
+                        <div class="col-md-8">
+                            <p><?php echo $_COOKIE["address"]; ?></p>
+                        </div>
+                    </div>
+                    <input type="text" class="form-control" name="address" placeholder="Update Address" >
                     <div class="invalid-feedback">
                         Please enter your shipping address.
                     </div>
@@ -195,16 +267,30 @@ if (isset($_POST['submit'])) {
 
                 <!--Address continued-->
                 <div class="mb-3">
-                    <label for="address2">Address 2 <span class="text-muted">(Optional)</span></label>
-                    <input type="text" class="form-control" name="address_two" placeholder="Apartment or suite">
+                <div class="row">
+                        <div class="col-md-8">
+                        <label for="address2">Current Address <span class="text-muted">(Optional)</span></label>
+                        </div>
+                        <div class="col-md-4">
+                            <p><?php echo $_COOKIE["address_two"]; ?></p>
+                        </div>
+                    </div>
+                    <input type="text" class="form-control" name="address_two" placeholder="Update Apartment or suite">
                 </div>
                 <!--End of address continued-->
 
                 <!--City-->
                 <div class="row">
                     <div class="col-md-5 mb-3">
-                        <label for="city">City</label>
-                        <input type="text" class="form-control" name="city" required>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <label for="username">Current City</label>
+                        </div>
+                        <div class="col-md-12">
+                            <p><?php echo $_COOKIE["city"]; ?></p>
+                        </div>
+                    </div>
+                        <input type="text" class="form-control" name="city" placeholder="Update City" >
                         <div class="invalid-feedback">
                             Valid city is required.
                         </div>
@@ -213,8 +299,15 @@ if (isset($_POST['submit'])) {
 
                     <!--State-->
                     <div class="col-md-4 mb-3">
-                        <label for="state">State</label>
-                        <select name="state" class="custom-select d-block w-100" required>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <label for="username">Current State</label>
+                            </div>
+                            <div class="col-md-12">
+                                <p><?php echo $_COOKIE["state"]; ?></p>
+                            </div>
+                        </div>
+                        <select name="state" class="custom-select d-block w-100" >
                             <option value="state">Choose...</option>
                             <option value="Alabama">Alabama</option>
                             <option value="Alaska">Alaska</option>
@@ -275,8 +368,15 @@ if (isset($_POST['submit'])) {
 
                     <!--Zip-->
                     <div class="col-md-3 mb-3">
-                        <label for="zip">Zip</label>
-                        <input type="text" class="form-control" name="zip" required>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <label for="username">Current Zip</label>
+                        </div>
+                        <div class="col-md-12">
+                            <p><?php echo $_COOKIE["zip"]; ?></p>
+                        </div>
+                    </div>
+                        <input type="text" class="form-control" name="zip" placeholder="Update Zip" >
                         <div class="invalid-feedback">
                             Zip code required.
                         </div>
@@ -285,104 +385,14 @@ if (isset($_POST['submit'])) {
                 </div>
                 <!--End of create an account-->
 
-                <!--Checkboxes-->
-                <hr class="mb-4">
-                <div class="custom-control custom-checkbox">
-                    <input type="checkbox" class="custom-control-input" id="same-address" checked>
-                    <label class="custom-control-label" for="same-address">Shipping address is the same as my billing
-                        address</label>
-                </div>
-                <div class="custom-control custom-checkbox">
-                    <input type="checkbox" class="custom-control-input" id="save-info" checked>
-                    <label class="custom-control-label" for="save-info">Save this information for next time</label>
-                </div>
-                <hr class="mb-4">
-                <!--End of checkboxes-->
-
-                <!--Donate Section-->
-                <h4 class="mb-3">Donate <span class="text-muted">(Optional)</span></h4>
-
-                <!--Credit Card-->
-                <div class="d-block my-3">
-                    <div class="custom-control custom-radio">
-                        <input id="credit" name="paymentMethod" type="radio" class="custom-control-input" checked
-                               required>
-                        <label class="custom-control-label" for="credit">Credit card</label>
-                    </div>
-                    <!--End of credit card-->
-
-                    <!--Debit Card-->
-                    <div class="custom-control custom-radio">
-                        <input id="debit" name="paymentMethod" type="radio" class="custom-control-input">
-                        <label class="custom-control-label" for="debit">Debit card</label>
-                    </div>
-                </div>
-                <!--End of debit card-->
-
-                <!--Amount-->
-                <div class="row">
-                    <div class="col-md-3 mb-3">
-                        <label for="cc-name">Amount</label>
-                        <input type="text" class="form-control" id="cc-name" placeholder="">
-                    </div>
-                </div>
-                <!--End of amount-->
-
-                <!--Name-->
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label for="cc-name">Name on card</label>
-                        <input type="text" class="form-control" id="cc-name" placeholder="">
-                        <small class="text-muted">Full name as displayed on card</small>
-                        <div class="invalid-feedback">
-                            Name on card is required
-                        </div>
-                    </div>
-                    <!--End of name-->
-
-                    <!--Credit Card Number-->
-                    <div class="col-md-6 mb-3">
-                        <label for="cc-number">Credit card number</label>
-                        <input type="text" class="form-control" id="cc-number" placeholder="">
-                        <div class="invalid-feedback">
-                            Credit card number is required
-                        </div>
-                    </div>
-                </div>
-                <!--End of credit card number-->
-
-                <!--Expiration-->
-                <div class="row">
-                    <div class="col-md-3 mb-3">
-                        <label for="cc-expiration">Expiration</label>
-                        <input type="text" class="form-control" id="cc-expiration" placeholder="">
-                        <div class="invalid-feedback">
-                            Expiration date required
-                        </div>
-                    </div>
-                    <!--End of expiration-->
-
-                    <!--CVV-->
-                    <div class="col-md-3 mb-3">
-                        <label for="cc-expiration">CVV</label>
-                        <input type="text" class="form-control" id="cc-cvv" placeholder="">
-                        <div class="invalid-feedback">
-                            Security code required
-                        </div>
-                    </div>
-                </div>
-                <!--End of CVV-->
-
                 <!--Continue button-->
                 <hr class="mb-4">
                 <button class="btn btn-primary btn-lg btn-block" type="submit" name="submit">Continue</button>
                 <!--End of continue button-->
             </form>
+            </div>
         </div>
-    </div>
-</form>
-<!--End of form-->
-
+    </form>
+</div>
 </body>
-<!--End of body-->
 </html>

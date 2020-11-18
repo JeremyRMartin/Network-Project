@@ -86,11 +86,14 @@ if ($connection->connect_error) {
 
             if ($result->num_rows > 0) {
                 while ($row = $result->fetch_assoc()) {
+                    setcookie("user_id", $row["user_id"], time() + 3600 *24);
                     setcookie("first_name", $row["first_name"], time() + 3600 * 24);
                     setcookie("last_name", $row["last_name"], time() + 3600 * 24);
                     setcookie("username", $row["username"], time() + 3600 * 24);
+                    setcookie("password", $row["password"], time() + 3600 * 24);
                     setcookie("email", $row["email"], time() + 3600 * 24);
                     setcookie("address", $row["address"], time() + 3600 * 24);
+                    setcookie("address_two", $row["address_two"], time() + 3600 * 24);
                     setcookie("city", $row["city"], time() + 3600 * 24);
                     setcookie("state", $row["state"], time() + 3600 * 24);
                     setcookie("zip", $row["zip"], time() + 3600 * 24);

@@ -46,6 +46,9 @@
                     <h1>
                         <?php echo $_COOKIE["first_name"] . " " . $_COOKIE["last_name"]; ?>
                     </h1>
+                    <div>
+                        <a href="profile_edit.php">Edit Info</a>
+                    <div>
                     <ul class="nav nav-tabs" id="myTab" role="tablist">
                         <li class="nav-item">
                             <a class="nav-link active" id="home-tab" data-toggle="tab" role="tab"
